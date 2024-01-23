@@ -3,8 +3,8 @@ import { FaSearch,FaShoppingBag,FaSignInAlt,FaUser,FaSignOutAlt } from "react-ic
 import { Link } from "react-router-dom"
 
 const user = {
-    _id:"20242001",
-    role:"admin"
+    _id:"",
+    role:""
 }
 
 const Header = () => {
