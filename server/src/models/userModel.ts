@@ -7,7 +7,7 @@ interface IUser extends Document{
     email:string;
     photo:string;
     role:"admin" | "user";
-    gender: "male" | "femail" | "other";
+    gender: "male" | "female" | "other";
     dob:Date;
     createdAt:Date;
     updatedAt:Date;
@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     {
         _id:{
             type:String,
-            required:[true,"Please enter ID"]
+            required:[true,"Please enter ID"],
         },
         name:{
             type:String,
