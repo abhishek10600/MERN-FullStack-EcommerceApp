@@ -1,7 +1,8 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response, response } from "express";
 import { User } from "../models/userModel.js";
 import { NewUserRequestBody } from "../types/types.js";
 import { TryCatch } from "../middlewares/errorMiddleware.js";
+import ErrorHandler from "../utils/ErrorHandlerClass.js";
 
 export const registerUser = TryCatch(
     async(
@@ -9,7 +10,17 @@ export const registerUser = TryCatch(
         res:Response,
         next:NextFunction)=>{
             const {_id,name,email,photo,gender,dob} = req.body;
-            const user = await User.create({
+            if(!_id || !name || !email || !photo || !gender || !dob){
+                return next(new ErrorHandler("Please enter the required fields.",400));
+            }
+            let user = await User.findById(_id);
+            if(user){
+                return res.status(200).json({
+                    success:true,
+                    message:`Welcome back ${user.name}`
+                })
+            }
+            user = await User.create({
                 _id,
                 name,
                 email,
@@ -23,3 +34,36 @@ export const registerUser = TryCatch(
             })
     }
 );
+
+export const getAllUsers = TryCatch(async(req,res,next)=>{
+    const users = await User.find({});
+    return res.status(200).json({
+        success:true,
+        users
+    })
+})
+
+export const getUserById = TryCatch(async(req:Request,res,next)=>{
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    if(!user){
+        return next(new ErrorHandler("Invalid id",400));
+    }
+    res.status(200).json({
+        success:true,
+        user
+    })
+})
+
+export const deleteUser = TryCatch(async(req,res,next)=>{
+    const id = req.params.id;
+    const user = await User.findById(id);
+    if(!user){
+        return next(new ErrorHandler("Invalid id",400))
+    }
+    await user.deleteOne();
+    res.status(200).json({
+        success:true,
+        message:"User delete successfully."
+    })
+})
