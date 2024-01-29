@@ -9,6 +9,10 @@ export interface NewUserRequestBody{
     dob:Date;
 }
 
+export interface TestRequestBody{
+    name:string;
+}
+
 export type ControllerType = (
     req: Request, 
     res: Response, 

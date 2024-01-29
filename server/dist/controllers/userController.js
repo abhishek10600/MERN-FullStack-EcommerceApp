@@ -3,7 +3,7 @@ import { TryCatch } from "../middlewares/errorMiddleware.js";
 import ErrorHandler from "../utils/ErrorHandlerClass.js";
 export const registerUser = TryCatch(async (req, res, next) => {
     const { _id, name, email, photo, gender, dob } = req.body;
-    if (!_id || !name || !email || !photo || !gender || !dob) {
+    if (!_id || !name || !email || !gender || !dob) {
         return next(new ErrorHandler("Please enter the required fields.", 400));
     }
     let user = await User.findById(_id);

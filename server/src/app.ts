@@ -4,6 +4,7 @@ import express from "express";
 import userRouter from "./routes/userRoute.js";
 import connectDB from "./config/database.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import testRouter from "./routes/testRoute.js";
 
 
 const app = express();
@@ -22,6 +23,7 @@ app.get("/test",(req,res)=>{
     })
 })
 
+app.use("/api/v1/test",testRouter);
 //user Route
 app.use("/api/v1/users",userRouter);
 
