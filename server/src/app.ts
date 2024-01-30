@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import userRouter from "./routes/userRoute.js";
+import productRouter from "./routes/productRoute.js";
 import connectDB from "./config/database.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import testRouter from "./routes/testRoute.js";
@@ -26,6 +27,7 @@ app.get("/test",(req,res)=>{
 app.use("/api/v1/test",testRouter);
 //user Route
 app.use("/api/v1/users",userRouter);
+app.use("/api/v1/products",productRouter);
 
 app.use(errorMiddleware);
 

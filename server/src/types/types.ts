@@ -13,6 +13,14 @@ export interface TestRequestBody{
     name:string;
 }
 
+export interface NewProductRequestBody{
+    name:string;
+    photo:object;
+    price:number;
+    stock:number;
+    category:number;
+}
+
 export type ControllerType = (
     req: Request, 
     res: Response, 
