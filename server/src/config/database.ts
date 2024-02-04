@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
 
 const connectDB = ()=>{
-    mongoose.connect("mongodb://localhost:27017",{
-        dbName:"FullStackEcommerceApp"
-    }).then(
+    mongoose.connect(process.env.MONGODB_URI).then(
             (c)=>console.log(`Database connected to ${c.connection.host}`)
         ).catch(
             (error)=>{

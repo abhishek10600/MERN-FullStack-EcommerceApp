@@ -4,7 +4,7 @@ export interface NewUserRequestBody{
     _id:string;
     name:string;
     email:string;
-    photo:string;
+    photo?:object;
     gender:string;
     dob:Date;
 }
@@ -15,7 +15,7 @@ export interface TestRequestBody{
 
 export interface NewProductRequestBody{
     name:string;
-    photo:object;
+    photo?:object;
     price:number;
     stock:number;
     category:number;
