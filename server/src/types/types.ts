@@ -50,3 +50,9 @@ export type PhotoType = {
     public_id?:string;
     secure_url?:string;
 }
+
+export type InvalidateCacheType = {
+    product?:boolean;
+    order?:boolean;
+    admin?:boolean;
+}

@@ -5,8 +5,10 @@ import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
 import connectDB from "./config/database.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import NodeCache from "node-cache";
 const app = express();
 connectDB();
+export const myCache = new NodeCache();
 app.use(express.json());
 const port = process.env.PORT;
 //testing

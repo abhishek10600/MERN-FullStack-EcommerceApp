@@ -4,7 +4,8 @@ import { NewProductRequestBody,SearchRequestQuery,BaseQuery,PhotoType } from "..
 import cloudinary from "../config/cloudinaryConfig.js";
 import Product from "../models/productModel.js";
 import ErrorHandler from "../utils/ErrorHandlerClass.js";
-import { DeleteApiResponse } from "cloudinary";
+import { myCache } from "../app.js";
+import { invalidateCache } from "../utils/Features.js";
 
 //admin feature
 export const newProduct = TryCatch(async(req:Request<{},{},NewProductRequestBody>,res:Response,next:NextFunction)=>{
@@ -38,6 +39,9 @@ export const newProduct = TryCatch(async(req:Request<{},{},NewProductRequestBody
             stock,
             category
         })
+
+        await invalidateCache({product:true});
+
         res.status(201).json({
             success:true,
             message:"Product created successfully.",
@@ -47,9 +51,13 @@ export const newProduct = TryCatch(async(req:Request<{},{},NewProductRequestBody
 })
 
 export const getLatestProducts = TryCatch(async(req,res,next)=>{
-
-    const products = await Product.find().sort({createdAt:-1}).limit(5);
-
+    let products;
+    if(myCache.has("latestProducts")){
+        products = JSON.parse(myCache.get("latestProducts") as string);
+    }else{
+        products = await Product.find().sort({createdAt:-1}).limit(5);
+        myCache.set("latestProducts",JSON.stringify(products));
+    }
     res.status(200).json({
         success:true,
         products
@@ -57,7 +65,13 @@ export const getLatestProducts = TryCatch(async(req,res,next)=>{
 })
 
 export const getAllCategories = TryCatch(async(req,res,next)=>{
-    const categories = await Product.distinct("category");
+    let categories;
+    if(myCache.has("categories")){
+        categories = JSON.parse(myCache.get("categories") as string);
+    }else{
+        categories = await Product.distinct("category");
+        myCache.set("categories",JSON.stringify(categories));
+    }
     res.status(200).json({
         success:true,
         categories
@@ -66,7 +80,13 @@ export const getAllCategories = TryCatch(async(req,res,next)=>{
 
 //admin feature
 export const getAdminProducts = TryCatch(async(req,res,next)=>{
-    const products = await Product.find();
+    let products;
+    if(myCache.has("adminAllProducts")){
+        products = JSON.parse(myCache.get("adminAllProducts") as string);
+    }else{
+        products = await Product.find();
+        myCache.set("adminAllProducts",JSON.stringify(products));
+    }
     res.status(200).json({
         success:true,
         products
@@ -74,10 +94,16 @@ export const getAdminProducts = TryCatch(async(req,res,next)=>{
 })
 
 export const getSingleProduct = TryCatch(async(req,res,next)=>{
+    let product;
     const {productId} = req.params;
-    const product = await Product.findById(productId);
-    if(!product){
-        return next(new ErrorHandler("Product does not found",404))
+    if(myCache.has(`product-${productId}`)){
+        product = JSON.parse(myCache.get(`product-${productId}`) as string);
+    }else{
+        product = await Product.findById(productId);
+        if(!product){
+            return next(new ErrorHandler("Product does not found",404))
+        }
+        myCache.set(`product-${productId}`,JSON.stringify(product));
     }
     res.status(200).json({
         success:true,
@@ -120,6 +146,7 @@ export const updateProduct = TryCatch(async(req,res,next)=>{
         product.category = category;
     }
     await product.save();
+    await invalidateCache({product:true});
     res.status(200).json({
         success:true,
         message:"product updated successfully.",
@@ -138,6 +165,7 @@ export const deleteProduct = TryCatch(async(req,res,next)=>{
         await cloudinary.uploader.destroy(product.photo.public_id);
     }
     await product.deleteOne();
+    await invalidateCache({product:true});
     res.status(200).json({
         success:true,
         message:"Product deleted successfully."
