@@ -5,3 +5,5 @@ server/node_modules
 server/dist/config
 
 server/src/config
+
+server/.env

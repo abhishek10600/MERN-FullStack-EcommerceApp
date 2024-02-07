@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-const connectDB = ()=>{
-    mongoose.connect(process.env.MONGODB_URI).then(
+const connectDB = (uri:string)=>{
+    mongoose.connect(uri).then(
             (c)=>console.log(`Database connected to ${c.connection.host}`)
         ).catch(
             (error)=>{

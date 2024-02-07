@@ -1,6 +1,6 @@
 import { myCache } from "../app.js";
 import Product from "../models/productModel.js";
-import { InvalidateCacheType } from "../types/types.js";
+import { InvalidateCacheType, OrderItemsType } from "../types/types.js";
 
 export const invalidateCache = async({product,order,admin}:InvalidateCacheType)=>{
     if (product){
@@ -10,5 +10,27 @@ export const invalidateCache = async({product,order,admin}:InvalidateCacheType)=
             productKeys.push(`product-${pId}`);
         })
         myCache.del(productKeys);
+    }
+    if(order){
+
+    }
+    if(admin){
+        
+    }
+}
+
+export const reduceStock = async(orderItems:OrderItemsType[])=>{
+    try {
+        for(let i = 0;i < orderItems.length;i++){
+            const order = orderItems[i];
+            const product = await Product.findById(order.productId);
+            if(!product){
+                throw new Error("Product not found.")
+            }
+            product.stock = product.stock - order.quantity;
+            product.save();
+        }
+    } catch (error:any) {
+        console.log(error.message);
     }
 }

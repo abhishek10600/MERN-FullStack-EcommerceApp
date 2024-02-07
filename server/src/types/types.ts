@@ -9,16 +9,39 @@ export interface NewUserRequestBody{
     dob:Date;
 }
 
-export interface TestRequestBody{
-    name:string;
-}
-
 export interface NewProductRequestBody{
     name:string;
     photo?:object;
     price:number;
     stock:number;
     category:number;
+}
+
+export type OrderItemsType = {
+    name:string;
+    photo?:object;
+    price:number;
+    quantity:number;
+    productId:string;
+}
+
+export type ShippingInfoType = {
+    address:string;
+    city:string;
+    state:string;
+    country:string;
+    pinCode:number;
+}
+
+export interface NewOrderRequestBody{
+    shippingInfo:ShippingInfoType;
+    user:string;
+    subTotal:number;
+    tax:number;
+    shippingCharges:number;
+    discount:number;
+    total:number;
+    orderItems:OrderItemsType[];
 }
 
 export type ControllerType = (

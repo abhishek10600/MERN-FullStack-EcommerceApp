@@ -9,4 +9,24 @@ export const invalidateCache = async ({ product, order, admin }) => {
         });
         myCache.del(productKeys);
     }
+    if (order) {
+    }
+    if (admin) {
+    }
+};
+export const reduceStock = async (orderItems) => {
+    try {
+        for (let i = 0; i < orderItems.length; i++) {
+            const order = orderItems[i];
+            const product = await Product.findById(order.productId);
+            if (!product) {
+                throw new Error("Product not found.");
+            }
+            product.stock = product.stock - order.quantity;
+            product.save();
+        }
+    }
+    catch (error) {
+        console.log(error.message);
+    }
 };
