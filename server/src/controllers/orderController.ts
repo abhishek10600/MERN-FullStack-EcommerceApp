@@ -1,39 +1,41 @@
-import { NextFunction, Request, Response } from "express";
+import {Request} from "express";
 import { TryCatch } from "../middlewares/errorMiddleware.js";
 import { NewOrderRequestBody } from "../types/types.js";
 import Order from "../models/orderModel.js";
-import { invalidateCache, reduceStock } from "../utils/Features.js";
 import ErrorHandler from "../utils/ErrorHandlerClass.js";
+import { invalidateCache, reduceStock } from "../utils/Features.js";
 import { myCache } from "../app.js";
 
-export const newOrder = TryCatch(async(req:Request<{},{},NewOrderRequestBody>,res:Response,next:NextFunction)=>{
+export const newOrder = TryCatch(async(req:Request<{},{},NewOrderRequestBody>,res,next)=>{
     const {
-        shippingInfo,
+        shippingInfo, 
         orderItems,
         user,
         subTotal,
         tax,
         shippingCharges,
-        discount, 
+        discount,
         total
-    } = req.body;
+    } = req.body
+
     if(!shippingInfo || !orderItems || !user || !subTotal || !total){
         return next(new ErrorHandler("All the fields are required.",400));
     }
-    const order = await Order.create({
-        shippingInfo,
+
+    await Order.create({
+        shippingInfo, 
         orderItems,
         user,
         subTotal,
         tax,
         shippingCharges,
-        discount, 
+        discount,
         total
     })
 
-    //reduce stock
-    await reduceStock(orderItems);
-    invalidateCache({product:true,order:true,admin:true})
+    await reduceStock(orderItems)
+
+    invalidateCache({product:true,order:true,admin:true,userId:user})
     return res.status(201).json({
         success:true,
         message:"Order placed successfully."
@@ -89,3 +91,38 @@ export const getSingleOrder = TryCatch(async(req,res,next)=>{
         })
     }
 })
+
+export const processOrder = TryCatch(async(req,res,next)=>{
+    const {orderId} = req.params;
+    const order = await Order.findById(orderId);
+    if (!order){
+        return next(new ErrorHandler("Order not found",404))
+    }
+    if(order.status === "processing"){
+        order.status = "shipping"
+    }else if(order.status === "shipping"){
+        order.status = "delivered"
+    }else{
+        order.status = "delivered"
+    }
+    await order.save()
+    await invalidateCache({product:false, order:true, admin:true,userId:order.user})
+    return res.status(200).json({
+        success:true,
+        message:"Order processed successfully."
+    })
+})
+
+export const deleteOrder = TryCatch(async(req,res,next)=>{
+    const {orderId} = req.params
+    const order =  await Order.findById(orderId)
+    if (!order){
+        return next(new ErrorHandler("Order not found",404))
+    }
+    await order.deleteOne()
+    await invalidateCache({product:false, order:true, admin:true,userId:order.user})
+    return res.status(200).json({
+        success:true,
+        message:"Order deleted successfully."
+    })
+}) 

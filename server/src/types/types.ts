@@ -78,4 +78,5 @@ export type InvalidateCacheType = {
     product?:boolean;
     order?:boolean;
     admin?:boolean;
+    userId?:string;
 }

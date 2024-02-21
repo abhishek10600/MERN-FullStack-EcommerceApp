@@ -5,10 +5,10 @@ dotenv.config({
 import express from "express";
 import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
+import orderRouter from "./routes/orderRoute.js";
 import connectDB from "./config/database.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import NodeCache from "node-cache";
-import orderRouter from "./routes/orderRoute.js";
 const app = express();
 const mongoURI = process.env.MONGODB_URI || "";
 connectDB(mongoURI);

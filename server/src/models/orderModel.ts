@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
 const orderSchema = new mongoose.Schema(
     {
@@ -51,8 +51,8 @@ const orderSchema = new mongoose.Schema(
         },
         status:{
             type:String,
-            enum:["proccessing", "shipping", "delivered"],
-            default: "proccessing"
+            enum:["processing", "shipping", "delivered"],
+            default: "processing"
         },
         orderItems:[
             {
@@ -82,6 +82,6 @@ const orderSchema = new mongoose.Schema(
     }
 )
 
-const Order = mongoose.model("Order",orderSchema);
+const Order = mongoose.model("Order",orderSchema)
 
-export default Order;
+export default Order
