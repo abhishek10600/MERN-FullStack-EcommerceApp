@@ -7,6 +7,7 @@ import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import paymentRouter from "./routes/paymentRoute.js";
+import dashboardRouter from "./routes/statsRoute.js";
 import connectDB from "./config/database.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import NodeCache from "node-cache";
@@ -28,6 +29,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/payments", paymentRouter);
+app.use("/api/v1/dashboard", dashboardRouter);
 app.use(errorMiddleware);
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
